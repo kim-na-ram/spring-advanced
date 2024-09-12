@@ -3,6 +3,7 @@ package org.example.expert.domain.todo.service;
 import org.example.expert.client.WeatherClient;
 import org.example.expert.domain.common.dto.AuthUser;
 import org.example.expert.domain.common.exception.InvalidRequestException;
+import org.example.expert.domain.common.exception.ServerException;
 import org.example.expert.domain.data.todo.TodoMockDataUtil;
 import org.example.expert.domain.data.user.UserMockDataUtil;
 import org.example.expert.domain.todo.dto.request.TodoSaveRequest;
@@ -42,6 +43,23 @@ class TodoServiceTest {
     @Nested
     @DisplayName("todo 등록 테스트 케이스")
     class SaveTodo {
+        @Test
+        @DisplayName("날씨 정보가 없어 todo 등록에 실패한다")
+        void saveTodo_weather_failure() {
+            // given
+            AuthUser authUser = UserMockDataUtil.authUser();
+            TodoSaveRequest todoSaveRequest = TodoMockDataUtil.todoSaveRequest();
+
+            given(weatherClient.getTodayWeather()).willThrow(new ServerException("날씨 데이터가 없습니다."));
+
+            // when
+            ServerException exception =
+                    assertThrows(ServerException.class, () -> todoService.saveTodo(authUser, todoSaveRequest));
+
+            // then
+            assertNotNull(exception);
+        }
+
         @Test
         @DisplayName("todo 등록에 성공한다")
         void saveTodo_success() {
