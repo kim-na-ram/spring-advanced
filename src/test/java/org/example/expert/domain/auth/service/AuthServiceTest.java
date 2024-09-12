@@ -68,8 +68,8 @@ class AuthServiceTest {
             given(userRepository.existsByEmail(anyString())).willReturn(false);
 
             // when
-            InvalidRequestException exception = assertThrows(InvalidRequestException.class,
-                    () -> authService.signup(signupRequest));
+            InvalidRequestException exception =
+                    assertThrows(InvalidRequestException.class, () -> authService.signup(signupRequest));
 
             // then
             assertEquals("유효하지 않은 UerRole", exception.getMessage());

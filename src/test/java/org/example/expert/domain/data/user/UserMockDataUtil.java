@@ -3,7 +3,9 @@ package org.example.expert.domain.data.user;
 import org.example.expert.domain.auth.dto.request.SigninRequest;
 import org.example.expert.domain.auth.dto.request.SignupRequest;
 import org.example.expert.domain.common.dto.AuthUser;
+import org.example.expert.domain.user.dto.request.UserChangePasswordRequest;
 import org.example.expert.domain.user.dto.request.UserRoleChangeRequest;
+import org.example.expert.domain.user.dto.response.UserResponse;
 import org.example.expert.domain.user.entity.User;
 import org.example.expert.domain.user.enums.UserRole;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -68,5 +70,13 @@ public class UserMockDataUtil {
 
     public static UserRoleChangeRequest userRoleChangeRequest_toAdmin() {
         return new UserRoleChangeRequest("ADMIN");
+    }
+
+    public static UserResponse userResponse() {
+        return new UserResponse(1L, "email");
+    }
+
+    public static UserChangePasswordRequest userChangePasswordRequest() {
+        return new UserChangePasswordRequest("oldPassword", "newPassword");
     }
 }
