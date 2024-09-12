@@ -8,8 +8,10 @@ import org.example.expert.domain.comment.repository.CommentRepository;
 import org.example.expert.domain.common.dto.AuthUser;
 import org.example.expert.domain.common.exception.InvalidRequestException;
 import org.example.expert.domain.data.comment.CommentMockDataUtil;
+import org.example.expert.domain.data.manager.ManagerMockDataUtil;
 import org.example.expert.domain.data.todo.TodoMockDataUtil;
 import org.example.expert.domain.data.user.UserMockDataUtil;
+import org.example.expert.domain.manager.entity.Manager;
 import org.example.expert.domain.todo.entity.Todo;
 import org.example.expert.domain.todo.repository.TodoRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -64,6 +67,29 @@ class CommentServiceTest {
         }
 
         @Test
+        @DisplayName("todo 담당 매니저가 아니라 comment 등록에 실패한다.")
+        public void saveComment_InvalidManager_failure() {
+            // given
+            long todoId = 1;
+            AuthUser authUser = UserMockDataUtil.authUser();
+            CommentSaveRequest request = CommentMockDataUtil.commentSaveRequest();
+
+            Todo todo = TodoMockDataUtil.todo();
+            ReflectionTestUtils.setField(todo, "managers", List.of());
+
+            given(todoRepository.findById(anyLong())).willReturn(Optional.of(todo));
+
+            // when
+            InvalidRequestException exception =
+                    assertThrows(InvalidRequestException.class,
+                            () -> commentService.saveComment(authUser, todoId, request)
+                    );
+
+            // then
+            assertEquals("댓글 작성은 담당 매니저만 가능합니다.", exception.getMessage());
+        }
+
+        @Test
         @DisplayName("comment를 정상적으로 등록한다.")
         public void saveComment_success() {
             // given
@@ -72,6 +98,9 @@ class CommentServiceTest {
             CommentSaveRequest request = CommentMockDataUtil.commentSaveRequest();
 
             Todo todo = TodoMockDataUtil.todo();
+            Manager manager = ManagerMockDataUtil.manager(UserMockDataUtil.user());
+            ReflectionTestUtils.setField(todo, "managers", List.of(manager));
+
             Comment comment = CommentMockDataUtil.comment();
 
             given(todoRepository.findById(anyLong())).willReturn(Optional.of(todo));

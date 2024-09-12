@@ -7,10 +7,15 @@ import org.example.expert.domain.manager.dto.response.ManagerResponse;
 import org.example.expert.domain.manager.dto.response.ManagerSaveResponse;
 import org.example.expert.domain.manager.entity.Manager;
 import org.example.expert.domain.user.dto.response.UserResponse;
+import org.example.expert.domain.user.entity.User;
 
 public class ManagerMockDataUtil {
     public static Manager manager() {
         return new Manager(UserMockDataUtil.user(), TodoMockDataUtil.todo());
+    }
+
+    public static Manager manager(User user) {
+        return new Manager(user, TodoMockDataUtil.todo());
     }
 
     public static ManagerSaveRequest managerSaveRequest() {
